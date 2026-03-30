@@ -1,9 +1,8 @@
-
 <!doctype html>
 <html>
 <head>
     <meta charset="utf-8">
-    <title>AR Video Full - Có Âm Thanh</title>
+    <title>AR Video PRO - Smooth + Sound</title>
 
     <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
@@ -16,14 +15,14 @@
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
 
     <script>
-        // 🎬 XỬ LÝ VIDEO + ÂM THANH
+        // 🎬 VIDEO + ÂM THANH
         AFRAME.registerComponent('videohandler', {
             init: function () {
                 var marker = this.el;
                 this.vid = document.querySelector("#vid");
 
                 marker.addEventListener('markerFound', () => {
-                    this.vid.muted = false;   // 🔥 bật âm thanh
+                    this.vid.muted = false;
                     this.vid.play();
                 });
 
@@ -33,36 +32,54 @@
             }
         });
 
-        // 📐 FIX TỈ LỆ VIDEO KHÔNG MÉO
-                AFRAME.registerComponent('fit-video', {
-                    init: function () {
-                        const video = document.querySelector("#vid");
-                        const el = this.el;
-                
-                        const setSize = () => {
-                            const w = video.videoWidth;
-                            const h = video.videoHeight;
-                
-                            if (w && h) {
-                                const ratio = w / h;
-                
-                                const width = 1.8; // bạn muốn to bao nhiêu tùy
-                
-                                el.setAttribute('width', width);
-                                el.setAttribute('height', width / ratio);
-                
-                                console.log("VIDEO SIZE:", w, h);
-                            } else {
-                                // nếu chưa load xong → thử lại
-                                setTimeout(setSize, 200);
-                            }
-                        };
-                
-                        setSize();
-                    }
-                });
+        // 📐 FIX TỈ LỆ VIDEO (KHÔNG BỊ BÓP)
+        AFRAME.registerComponent('fit-video', {
+            init: function () {
+                const video = document.querySelector("#vid");
+                const el = this.el;
 
-        // 🔊 BẮT BUỘC CLICK ĐỂ BẬT ÂM THANH (mobile)
+                const setSize = () => {
+                    const w = video.videoWidth;
+                    const h = video.videoHeight;
+
+                    if (w && h) {
+                        const ratio = w / h;
+                        const width = 3; // chỉnh size tại đây
+
+                        el.setAttribute('width', width);
+                        el.setAttribute('height', width / ratio);
+                    } else {
+                        setTimeout(setSize, 200);
+                    }
+                };
+
+                setSize();
+            }
+        });
+
+        // 🔥 CHỐNG RUNG (SMOOTH NÂNG CAO)
+        AFRAME.registerComponent('anti-shake', {
+            init: function () {
+                this.prevPos = new THREE.Vector3();
+                this.prevRot = new THREE.Euler();
+            },
+            tick: function () {
+                const obj = this.el.object3D;
+
+                // mượt vị trí
+                obj.position.lerp(this.prevPos, 0.1);
+
+                // mượt rotation
+                obj.rotation.x = obj.rotation.x * 0.9 + this.prevRot.x * 0.1;
+                obj.rotation.y = obj.rotation.y * 0.9 + this.prevRot.y * 0.1;
+                obj.rotation.z = obj.rotation.z * 0.9 + this.prevRot.z * 0.1;
+
+                this.prevPos.copy(obj.position);
+                this.prevRot.copy(obj.rotation);
+            }
+        });
+
+        // 🔊 CLICK BẬT ÂM THANH (mobile)
         document.addEventListener('click', function () {
             const video = document.querySelector("#vid");
             video.muted = false;
@@ -72,54 +89,57 @@
 
 <body style="margin: 0; overflow: hidden;">
 
-    <a-scene
-        vr-mode-ui="enabled: false"
-        loading-screen="enabled: false"
-        embedded
-        arjs="sourceType: webcam; debugUIEnabled: false;"
-        gesture-detector
+<a-scene
+    vr-mode-ui="enabled: false"
+    loading-screen="enabled: false"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false;"
+    gesture-detector
+>
+
+    <!-- VIDEO -->
+    <a-assets>
+        <video
+            id="vid"
+            src="assets/asset.mp4"
+            preload="auto"
+            loop
+            crossorigin="anonymous"
+            webkit-playsinline
+            playsinline
+        ></video>
+    </a-assets>
+
+    <!-- MARKER -->
+    <a-marker
+        type="pattern"
+        url="assets/marker.patt"
+        videohandler
+        emitevents="true"
+
+        smooth="true"
+        smoothCount="25"
+        smoothTolerance="0.004"
+        smoothThreshold="10"
     >
 
-        <!-- VIDEO -->
-        <a-assets>
-            <video
-                id="vid"
-                src="assets/asset.mp4"
-                preload="auto"
-                loop
-                crossorigin="anonymous"
-                webkit-playsinline
-                playsinline
-            ></video>
-        </a-assets>
-
-        <!-- MARKER -->
-        <a-marker
-            type="pattern"
-            url="assets/marker.patt"
-            videohandler
-            emitevents="true"
-            smooth="true"
-            smoothCount="10"
-            smoothTolerance="0.01"
-            smoothThreshold="5"
-        >
-
-            <!-- VIDEO HIỂN THỊ -->
+        <!-- CHỐNG RUNG + VIDEO -->
+        <a-entity anti-shake>
             <a-video
                 src="#vid"
                 fit-video
-                position="0 0.1 0"
+                position="0 0.15 0"
                 rotation="-90 0 0"
                 gesture-handler
             ></a-video>
+        </a-entity>
 
-        </a-marker>
+    </a-marker>
 
-        <!-- CAMERA -->
-        <a-entity camera></a-entity>
+    <!-- CAMERA -->
+    <a-entity camera></a-entity>
 
-    </a-scene>
+</a-scene>
 
 </body>
 </html>
