@@ -33,21 +33,33 @@
         });
 
         // 📐 FIX TỈ LỆ VIDEO KHÔNG MÉO
-        AFRAME.registerComponent('fit-video', {
-            init: function () {
-                const video = document.querySelector("#vid");
-                const el = this.el;
-
-                video.addEventListener('loadedmetadata', function () {
-                    const ratio = video.videoWidth / video.videoHeight;
-
-                    const width = 3; // chỉnh kích thước video tại đây
-
-                    el.setAttribute('width', width);
-                    el.setAttribute('height', width / ratio);
+                AFRAME.registerComponent('fit-video', {
+                    init: function () {
+                        const video = document.querySelector("#vid");
+                        const el = this.el;
+                
+                        const setSize = () => {
+                            const w = video.videoWidth;
+                            const h = video.videoHeight;
+                
+                            if (w && h) {
+                                const ratio = w / h;
+                
+                                const width = 3; // bạn muốn to bao nhiêu tùy
+                
+                                el.setAttribute('width', width);
+                                el.setAttribute('height', width / ratio);
+                
+                                console.log("VIDEO SIZE:", w, h);
+                            } else {
+                                // nếu chưa load xong → thử lại
+                                setTimeout(setSize, 200);
+                            }
+                        };
+                
+                        setSize();
+                    }
                 });
-            }
-        });
 
         // 🔊 BẮT BUỘC CLICK ĐỂ BẬT ÂM THANH (mobile)
         document.addEventListener('click', function () {
