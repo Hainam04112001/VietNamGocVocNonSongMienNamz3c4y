@@ -76,20 +76,29 @@
 >
 
     <!-- VIDEO -->
-    <a-assets>
-        <video id="vid1" src="assets/asset.mp4" preload="auto" loop playsinline></video>
-    </a-assets>
+        <a-assets>
+            <video
+                id="vid"
+                src="assets/asset.mp4"
+                preload="auto"
+                loop
+                crossorigin="anonymous"
+                webkit-playsinline
+                playsinline
+            ></video>
+        </a-assets>
 
-    <!-- 📕 SÁCH 1 -->
-    <a-marker
-        type="pattern"
-        url="assets/marker.patt"
-        videohandler
-        smooth="true"
-        smoothCount="15"
-    >
-        <a-video src="#vid1" fit-video rotation="-90 0 0"></a-video>
-    </a-marker>
+        <!-- MARKER -->
+        <a-marker
+            type="pattern"
+            url="assets/marker.patt"
+            videohandler
+            emitevents="true"
+            smooth="true"
+            smoothCount="10"
+            smoothTolerance="0.01"
+            smoothThreshold="5"
+        >
 
 
     <!-- CAMERA -->
