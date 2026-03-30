@@ -98,6 +98,8 @@
 >
 
     <!-- VIDEO -->
+
+    <!-- Sách -->
     <a-assets>
         <video
             id="vid"
@@ -122,6 +124,34 @@
         smoothTolerance="0.004"
         smoothThreshold="10"
     >
+
+        
+          <!-- Sách 1 -->
+            <a-assets>
+                <video
+                    id="vid"
+                    src="assets/sach1.mp4"
+                    preload="auto"
+                    loop
+                    crossorigin="anonymous"
+                    webkit-playsinline
+                    playsinline
+                ></video>
+            </a-assets>
+        
+            <!-- MARKER -->
+            <a-marker
+                type="pattern"
+                url="assets/marker1.patt"
+                videohandler
+                emitevents="true"
+        
+                smooth="true"
+                smoothCount="25"
+                smoothTolerance="0.004"
+                smoothThreshold="10"
+            >
+
 
         <!-- CHỐNG RUNG + VIDEO -->
         <a-entity anti-shake>
