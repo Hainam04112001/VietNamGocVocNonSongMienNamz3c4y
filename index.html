@@ -100,58 +100,24 @@
     <!-- VIDEO -->
 
     <!-- Sách -->
+
     <a-assets>
-        <video
-            id="vid"
-            src="assets/asset.mp4"
-            preload="auto"
-            loop
-            crossorigin="anonymous"
-            webkit-playsinline
-            playsinline
-        ></video>
+        <video id="vid1" src="assets/asset.mp4" loop playsinline></video>
+        <video id="vid2" src="assets/sach1.mp4" loop playsinline></video>
     </a-assets>
 
+    
     <!-- MARKER -->
-    <a-marker
-        type="pattern"
-        url="assets/marker.patt"
-        videohandler
-        emitevents="true"
+    <!-- Sách Chính -->
+    <a-marker url="assets/marker.patt" videohandler>
+        <a-video src="#vid1" fit-video rotation="-90 0 0"></a-video>
+    </a-marker>
 
-        smooth="true"
-        smoothCount="25"
-        smoothTolerance="0.004"
-        smoothThreshold="10"
-    >
-
-        
-          <!-- Sách 1 -->
-            <a-assets>
-                <video
-                    id="vid"
-                    src="assets/sach1.mp4"
-                    preload="auto"
-                    loop
-                    crossorigin="anonymous"
-                    webkit-playsinline
-                    playsinline
-                ></video>
-            </a-assets>
-        
-            <!-- MARKER -->
-            <a-marker
-                type="pattern"
-                url="assets/marker1.patt"
-                videohandler
-                emitevents="true"
-        
-                smooth="true"
-                smoothCount="25"
-                smoothTolerance="0.004"
-                smoothThreshold="10"
-            >
-
+        <!-- 📗 SÁCH 1 -->
+    <a-marker url="assets/marker1.patt" videohandler>
+        <a-video src="#vid2" fit-video rotation="-90 0 0"></a-video>
+    </a-marker>
+    
 
         <!-- CHỐNG RUNG + VIDEO -->
         <a-entity anti-shake>
