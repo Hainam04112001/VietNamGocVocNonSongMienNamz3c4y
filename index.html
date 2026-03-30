@@ -14,77 +14,76 @@
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
 
-    <script>
-        // 🎬 VIDEO + ÂM THANH
-        AFRAME.registerComponent('videohandler', {
-            init: function () {
-                var marker = this.el;
-                this.vid = document.querySelector("#vid");
+<script>
+    // 🎬 VIDEO + ÂM THANH (FIX MULTI VIDEO)
+    AFRAME.registerComponent('videohandler', {
+        init: function () {
+            const marker = this.el;
+            this.videoEl = marker.querySelector("a-video");
+            this.vid = document.querySelector(this.videoEl.getAttribute("src"));
 
-                marker.addEventListener('markerFound', () => {
-                    this.vid.muted = false;
-                    this.vid.play();
-                });
+            marker.addEventListener('markerFound', () => {
+                this.vid.muted = false;
+                this.vid.play();
+            });
 
-                marker.addEventListener('markerLost', () => {
-                    this.vid.pause();
-                });
-            }
-        });
+            marker.addEventListener('markerLost', () => {
+                this.vid.pause();
+            });
+        }
+    });
 
-        // 📐 FIX TỈ LỆ VIDEO (KHÔNG BỊ BÓP)
-        AFRAME.registerComponent('fit-video', {
-            init: function () {
-                const video = document.querySelector("#vid");
-                const el = this.el;
+    // 📐 FIX TỈ LỆ VIDEO (ĐÚNG VIDEO)
+    AFRAME.registerComponent('fit-video', {
+        init: function () {
+            const src = this.el.getAttribute('src');
+            const video = document.querySelector(src);
+            const el = this.el;
 
-                const setSize = () => {
-                    const w = video.videoWidth;
-                    const h = video.videoHeight;
+            const setSize = () => {
+                const w = video.videoWidth;
+                const h = video.videoHeight;
 
-                    if (w && h) {
-                        const ratio = w / h;
-                        const width = 3; // chỉnh size tại đây
+                if (w && h) {
+                    const ratio = w / h;
+                    const width = 3;
 
-                        el.setAttribute('width', width);
-                        el.setAttribute('height', width / ratio);
-                    } else {
-                        setTimeout(setSize, 200);
-                    }
-                };
+                    el.setAttribute('width', width);
+                    el.setAttribute('height', width / ratio);
+                } else {
+                    setTimeout(setSize, 200);
+                }
+            };
 
-                setSize();
-            }
-        });
+            setSize();
+        }
+    });
 
-        // 🔥 CHỐNG RUNG (SMOOTH NÂNG CAO)
-        AFRAME.registerComponent('anti-shake', {
-            init: function () {
-                this.prevPos = new THREE.Vector3();
-                this.prevRot = new THREE.Euler();
-            },
-            tick: function () {
-                const obj = this.el.object3D;
+    // 🔥 CHỐNG RUNG (GIỮ NGUYÊN)
+    AFRAME.registerComponent('anti-shake', {
+        init: function () {
+            this.prevPos = new THREE.Vector3();
+            this.prevRot = new THREE.Euler();
+        },
+        tick: function () {
+            const obj = this.el.object3D;
 
-                // mượt vị trí
-                obj.position.lerp(this.prevPos, 0.1);
+            obj.position.lerp(this.prevPos, 0.1);
 
-                // mượt rotation
-                obj.rotation.x = obj.rotation.x * 0.9 + this.prevRot.x * 0.1;
-                obj.rotation.y = obj.rotation.y * 0.9 + this.prevRot.y * 0.1;
-                obj.rotation.z = obj.rotation.z * 0.9 + this.prevRot.z * 0.1;
+            obj.rotation.x = obj.rotation.x * 0.9 + this.prevRot.x * 0.1;
+            obj.rotation.y = obj.rotation.y * 0.9 + this.prevRot.y * 0.1;
+            obj.rotation.z = obj.rotation.z * 0.9 + this.prevRot.z * 0.1;
 
-                this.prevPos.copy(obj.position);
-                this.prevRot.copy(obj.rotation);
-            }
-        });
+            this.prevPos.copy(obj.position);
+            this.prevRot.copy(obj.rotation);
+        }
+    });
 
-        // 🔊 CLICK BẬT ÂM THANH (mobile)
-        document.addEventListener('click', function () {
-            const video = document.querySelector("#vid");
-            video.muted = false;
-        });
-    </script>
+    // 🔊 CLICK bật âm thanh (FIX)
+    document.addEventListener('click', function () {
+        document.querySelectorAll("video").forEach(v => v.muted = false);
+    });
+</script>
 </head>
 
 <body style="margin: 0; overflow: hidden;">
@@ -118,19 +117,6 @@
         <a-video src="#vid2" fit-video rotation="-90 0 0"></a-video>
     </a-marker>
     
-
-        <!-- CHỐNG RUNG + VIDEO -->
-        <a-entity anti-shake>
-            <a-video
-                src="#vid"
-                fit-video
-                position="0 0.15 0"
-                rotation="-90 0 0"
-                gesture-handler
-            ></a-video>
-        </a-entity>
-
-    </a-marker>
 
     <!-- CAMERA -->
     <a-entity camera></a-entity>
