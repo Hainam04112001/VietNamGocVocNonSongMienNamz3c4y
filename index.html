@@ -1,82 +1,102 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
     <meta charset="utf-8">
     <title>AR Multi Books PRO</title>
+
+    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+
+    <!-- AR.js -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+    <!-- Gesture -->
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
 
     <script>
-        // 🎬 VIDEO HANDLER: Manages audio/playback on marker visibility
+        // 🎬 VIDEO HANDLER (FIX ÂM THANH)
         AFRAME.registerComponent('videohandler', {
             init: function () {
                 const marker = this.el;
-                this.videoSelector = marker.querySelector('a-video').getAttribute('src');
-                this.video = document.querySelector(this.videoSelector);
 
                 marker.addEventListener('markerFound', () => {
-                    // Stop other videos to save performance
                     document.querySelectorAll("video").forEach(v => {
                         v.pause();
+                        v.currentTime = 0;
                         v.muted = true;
                     });
-                    if (this.video) {
-                        this.video.muted = false;
-                        this.video.play().catch(e => console.log("Playback blocked:", e));
+
+                    const video = document.querySelector(
+                        marker.querySelector('a-video').getAttribute('src')
+                    );
+
+                    if (video) {
+                        video.muted = false;
+                        video.play().catch(() => {});
                     }
                 });
 
                 marker.addEventListener('markerLost', () => {
-                    if (this.video) {
-                        this.video.pause();
-                        this.video.muted = true;
+                    const video = document.querySelector(
+                        marker.querySelector('a-video').getAttribute('src')
+                    );
+
+                    if (video) {
+                        video.pause();
+                        video.muted = true;
                     }
                 });
             }
         });
 
-        // 📐 FIT VIDEO: Adjusts plane aspect ratio to match video file
+        // 📐 FIT VIDEO THEO TỶ LỆ
         AFRAME.registerComponent('fit-video', {
             init: function () {
-                const video = document.querySelector(this.el.getAttribute('src'));
+                const src = this.el.getAttribute('src');
+                const video = document.querySelector(src);
                 const el = this.el;
+
                 const setSize = () => {
                     if (video.videoWidth && video.videoHeight) {
                         const ratio = video.videoWidth / video.videoHeight;
-                        const baseWidth = 3; 
-                        el.setAttribute('width', baseWidth);
-                        el.setAttribute('height', baseWidth / ratio);
+                        const width = 3;
+
+                        el.setAttribute('width', width);
+                        el.setAttribute('height', width / ratio);
                     } else {
                         setTimeout(setSize, 200);
                     }
                 };
+
                 setSize();
             }
         });
 
-        // 🔥 ANTI-SHAKE: Smoothes movement using Linear Interpolation (Lerp)
+        // 🔥 CHỐNG RUNG
         AFRAME.registerComponent('anti-shake', {
             init: function () {
                 this.prevPos = new THREE.Vector3();
                 this.prevRot = new THREE.Euler();
             },
+
             tick: function () {
                 const obj = this.el.object3D;
-                obj.position.lerp(this.prevPos, 0.1); 
+
+                obj.position.lerp(this.prevPos, 0.1);
+
                 obj.rotation.x = obj.rotation.x * 0.9 + this.prevRot.x * 0.1;
                 obj.rotation.y = obj.rotation.y * 0.9 + this.prevRot.y * 0.1;
                 obj.rotation.z = obj.rotation.z * 0.9 + this.prevRot.z * 0.1;
+
                 this.prevPos.copy(obj.position);
                 this.prevRot.copy(obj.rotation);
             }
         });
 
-        // Mobile browser fix for autoplay
-        document.addEventListener('DOMContentLoaded', () => {
-            const vids = document.querySelectorAll("video");
-            vids.forEach(v => {
+        // ✅ FIX: KHÔNG CẦN CHẠM MÀN HÌNH
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll("video").forEach(v => {
                 v.muted = true;
                 v.setAttribute("playsinline", "");
                 v.setAttribute("webkit-playsinline", "");
@@ -86,46 +106,55 @@
 </head>
 
 <body style="margin: 0; overflow: hidden;">
-    <a-scene 
-        embedded 
-        vr-mode-ui="enabled: false" 
-        loading-screen="enabled: false" 
-        renderer="logarithmicDepthBuffer: true;" 
-        arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
+    <a-scene
+        embedded
+        vr-mode-ui="enabled: false"
+        loading-screen="enabled: false"
+        renderer="logarithmicDepthBuffer: true;"
+        arjs="sourceType: webcam; facingMode: environment;"
     >
+
+        <!-- 🎬 VIDEO ASSETS -->
         <a-assets>
-            <video id="vid1" src="assets/asset.mp4" preload="auto" loop crossorigin="anonymous"></video>
-            <video id="vid2" src="assets/sach1.mp4" preload="auto" loop crossorigin="anonymous"></video>
-            <video id="vid3" src="assets/sach2.mp4" preload="auto" loop crossorigin="anonymous"></video>
-            <video id="vid4" src="assets/sach3.mp4" preload="auto" loop crossorigin="anonymous"></video>
-            <video id="vid5" src="assets/sach4.mp4" preload="auto" loop crossorigin="anonymous"></video>
-            <video id="vid6" src="assets/sach5.mp4" preload="auto" loop crossorigin="anonymous"></video>
+            <video id="vid1" src="assets/asset.mp4" preload="auto" autoplay loop muted playsinline></video>
+            <video id="vid2" src="assets/sach1.mp4" preload="auto" autoplay loop muted playsinline></video>
+            <video id="vid3" src="assets/sach2.mp4" preload="auto" autoplay loop muted playsinline></video>
+            <video id="vid4" src="assets/sach3.mp4" preload="auto" autoplay loop muted playsinline></video>
+            <video id="vid5" src="assets/sach4.mp4" preload="auto" autoplay loop muted playsinline></video>
+            <video id="vid6" src="assets/sach5.mp4" preload="auto" autoplay loop muted playsinline></video>
         </a-assets>
 
-        <a-marker type="pattern" url="assets/marker.patt" videohandler smooth="true" smoothCount="10">
-            <a-video src="#vid1" rotation="-90 0 0" fit-video anti-shake></a-video>
+        <!-- 📕 SÁCH CHÍNH -->
+        <a-marker type="pattern" url="assets/marker.patt" videohandler smooth="true" smoothCount="20">
+            <a-video src="#vid1" rotation="-90 0 0"></a-video>
         </a-marker>
 
-        <a-marker type="pattern" url="assets/marker1.patt" videohandler smooth="true" smoothCount="10">
-            <a-video src="#vid2" rotation="-90 0 0" fit-video anti-shake></a-video>
+        <!-- 📗 SÁCH 1 -->
+        <a-marker type="pattern" url="assets/marker1.patt" videohandler smooth="true" smoothCount="20">
+            <a-video src="#vid2" rotation="-90 0 0"></a-video>
         </a-marker>
 
-        <a-marker type="pattern" url="assets/marker2.patt" videohandler smooth="true" smoothCount="10">
-            <a-video src="#vid3" rotation="-90 0 0" fit-video anti-shake></a-video>
+        <!-- 📗 SÁCH 2 -->
+        <a-marker type="pattern" url="assets/marker2.patt" videohandler smooth="true" smoothCount="20">
+            <a-video src="#vid3" rotation="-90 0 0"></a-video>
         </a-marker>
 
-        <a-marker type="pattern" url="assets/marker3.patt" videohandler smooth="true" smoothCount="10">
-            <a-video src="#vid4" rotation="-90 0 0" fit-video anti-shake></a-video>
+        <!-- 📗 SÁCH 3 -->
+        <a-marker type="pattern" url="assets/marker3.patt" videohandler smooth="true" smoothCount="20">
+            <a-video src="#vid4" rotation="-90 0 0"></a-video>
         </a-marker>
 
-        <a-marker type="pattern" url="assets/marker4.patt" videohandler smooth="true" smoothCount="10">
-            <a-video src="#vid5" rotation="-90 0 0" fit-video anti-shake></a-video>
+        <!-- 📗 SÁCH 4 -->
+        <a-marker type="pattern" url="assets/marker4.patt" videohandler smooth="true" smoothCount="20">
+            <a-video src="#vid5" rotation="-90 0 0"></a-video>
         </a-marker>
 
-        <a-marker type="pattern" url="assets/marker5.patt" videohandler smooth="true" smoothCount="10">
-            <a-video src="#vid6" rotation="-90 0 0" fit-video anti-shake></a-video>
+        <!-- 📗 SÁCH 5 -->
+        <a-marker type="pattern" url="assets/marker5.patt" videohandler smooth="true" smoothCount="20">
+            <a-video src="#vid6" rotation="-90 0 0"></a-video>
         </a-marker>
 
+        <!-- CAMERA -->
         <a-entity camera></a-entity>
     </a-scene>
 </body>
