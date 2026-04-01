@@ -97,6 +97,12 @@
     <a-assets>
         <video id="vid1" src="assets/asset.mp4" preload="auto" loop playsinline></video>
         <video id="vid2" src="assets/sach1.mp4" preload="auto" loop playsinline></video>
+        
+        <video id="vid3" src="assets/sach2.mp4" preload="auto" loop playsinline></video>
+        <video id="vid4" src="assets/sach3.mp4" preload="auto" loop playsinline></video>
+        <video id="vid5" src="assets/sach4.mp4" preload="auto" loop playsinline></video>
+        <video id="vid6" src="assets/sach5.mp4" preload="auto" loop playsinline></video>
+        
         <!-- thêm video ở đây -->
     </a-assets>
 
@@ -130,6 +136,36 @@
         </a-entity>
     </a-marker>
 
+    <!-- 📗 SÁCH 2 -->
+    <a-marker url="assets/marker2.patt" videohandler>
+        <a-entity anti-shake>
+            <a-video src="#vid3" fit-video rotation="-90 0 0"></a-video>
+        </a-entity>
+    </a-marker>
+
+        <!-- 📗 SÁCH 3 -->
+    <a-marker url="assets/marker3.patt" videohandler>
+        <a-entity anti-shake>
+            <a-video src="#vid4" fit-video rotation="-90 0 0"></a-video>
+        </a-entity>
+    </a-marker>
+
+            <!-- 📗 SÁCH 4 -->
+    <a-marker url="assets/marker4.patt" videohandler>
+        <a-entity anti-shake>
+            <a-video src="#vid5" fit-video rotation="-90 0 0"></a-video>
+        </a-entity>
+    </a-marker>
+
+            <!-- 📗 SÁCH 5 -->
+    <a-marker url="assets/marker5.patt" videohandler>
+        <a-entity anti-shake>
+            <a-video src="#vid6" fit-video rotation="-90 0 0"></a-video>
+        </a-entity>
+    </a-marker>
+    
+
+    
     <!-- CAMERA -->
     <a-entity camera></a-entity>
 
