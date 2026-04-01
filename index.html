@@ -14,26 +14,29 @@
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
 
     <script>
-        // 🎬 VIDEO HANDLER (FIX ÂM THANH)
+        // 🎬 VIDEO HANDLER (FIX KHÔNG GIẬT CAMERA)
         AFRAME.registerComponent('videohandler', {
             init: function () {
                 const marker = this.el;
 
                 marker.addEventListener('markerFound', () => {
 
-                    document.querySelectorAll("video").forEach(v => {
-                        v.pause();
-                        v.currentTime = 0;
-                        v.muted = true;
-                    });
-
-                    const video = document.querySelector(
+                    const currentVideo = document.querySelector(
                         marker.querySelector('a-video').getAttribute('src')
                     );
 
-                    if (video) {
-                        video.muted = false;
-                        video.play().catch(() => {});
+                    // ❌ KHÔNG reset toàn bộ nữa → tránh đứng camera
+                    document.querySelectorAll("video").forEach(v => {
+                        if (v !== currentVideo) {
+                            v.pause();
+                            v.muted = true;
+                        }
+                    });
+
+                    // ✅ chỉ chạy video đang quét
+                    if (currentVideo) {
+                        currentVideo.muted = false;
+                        currentVideo.play().catch(() => {});
                     }
                 });
 
@@ -93,7 +96,7 @@
             }
         });
 
-        // ✅ FIX: KHÔNG CẦN CHẠM MÀN HÌNH
+        // ✅ FIX autoplay mobile (KHÔNG cần chạm vẫn chạy)
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll("video").forEach(v => {
                 v.muted = true;
