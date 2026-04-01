@@ -15,7 +15,7 @@
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
 
     <script>
-        // 🎬 VIDEO HANDLER (chuẩn multi marker)
+        // 🎬 VIDEO HANDLER
         AFRAME.registerComponent('videohandler', {
             init: function () {
                 const marker = this.el;
@@ -41,7 +41,7 @@
             }
         });
 
-        // 📐 FIT VIDEO KHÔNG MÉO
+        // 📐 FIT VIDEO
         AFRAME.registerComponent('fit-video', {
             init: function () {
                 const src = this.el.getAttribute('src');
@@ -84,7 +84,7 @@
             }
         });
 
-        // 🔊 CLICK để bật video (fix mobile)
+        // 🔊 Fix mobile autoplay
         document.addEventListener('click', function () {
             document.querySelectorAll("video").forEach(v => {
                 v.muted = false;
@@ -100,18 +100,19 @@
     embedded
     vr-mode-ui="enabled: false"
     loading-screen="enabled: false"
-    arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;"
+    renderer="logarithmicDepthBuffer: true;"
+    arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false; trackingMethod: best;"
     gesture-detector
 >
 
     <!-- 🎬 VIDEO -->
     <a-assets>
-        <video id="vid1" src="assets/asset.mp4" preload="auto" loop muted playsinline webkit-playsinline></video>
-
-        <video id="vid3" src="assets/sach2.mp4" preload="auto" loop muted playsinline webkit-playsinline></video>
-        <video id="vid4" src="assets/sach3.mp4" preload="auto" loop muted playsinline webkit-playsinline></video>
-        <video id="vid5" src="assets/sach4.mp4" preload="auto" loop muted playsinline webkit-playsinline></video>
-        <video id="vid6" src="assets/sach5.mp4" preload="auto" loop muted playsinline webkit-playsinline></video>
+        <video id="vid1" src="assets/asset.mp4" preload="auto" autoplay loop muted playsinline webkit-playsinline></video>
+        <video id="vid2" src="assets/sach1.mp4" preload="auto" autoplay loop muted playsinline webkit-playsinline></video>
+        <video id="vid3" src="assets/sach2.mp4" preload="auto" autoplay loop muted playsinline webkit-playsinline></video>
+        <video id="vid4" src="assets/sach3.mp4" preload="auto" autoplay loop muted playsinline webkit-playsinline></video>
+        <video id="vid5" src="assets/sach4.mp4" preload="auto" autoplay loop muted playsinline webkit-playsinline></video>
+        <video id="vid6" src="assets/sach5.mp4" preload="auto" autoplay loop muted playsinline webkit-playsinline></video>
     </a-assets>
 
     <!-- 📕 SÁCH CHÍNH -->
@@ -128,24 +129,29 @@
         </a-entity>
     </a-marker>
 
-
+    <!-- 📗 SÁCH 2 -->
+    <a-marker type="pattern" url="assets/marker2.patt" videohandler smooth="true" smoothCount="25" smoothTolerance="0.004" smoothThreshold="10">
+        <a-entity anti-shake>
+            <a-video src="#vid3" fit-video rotation="-90 0 0"></a-video>
+        </a-entity>
+    </a-marker>
 
     <!-- 📗 SÁCH 3 -->
-    <a-marker type="pattern" url="assets/marker3.patt" videohandler>
+    <a-marker type="pattern" url="assets/marker3.patt" videohandler smooth="true" smoothCount="25" smoothTolerance="0.004" smoothThreshold="10">
         <a-entity anti-shake>
             <a-video src="#vid4" fit-video rotation="-90 0 0"></a-video>
         </a-entity>
     </a-marker>
 
     <!-- 📗 SÁCH 4 -->
-    <a-marker type="pattern" url="assets/marker4.patt" videohandler>
+    <a-marker type="pattern" url="assets/marker4.patt" videohandler smooth="true" smoothCount="25" smoothTolerance="0.004" smoothThreshold="10">
         <a-entity anti-shake>
             <a-video src="#vid5" fit-video rotation="-90 0 0"></a-video>
         </a-entity>
     </a-marker>
 
     <!-- 📗 SÁCH 5 -->
-    <a-marker type="pattern" url="assets/marker5.patt" videohandler>
+    <a-marker type="pattern" url="assets/marker5.patt" videohandler smooth="true" smoothCount="25" smoothTolerance="0.004" smoothThreshold="10">
         <a-entity anti-shake>
             <a-video src="#vid6" fit-video rotation="-90 0 0"></a-video>
         </a-entity>
