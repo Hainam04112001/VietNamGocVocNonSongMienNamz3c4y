@@ -9,17 +9,15 @@
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
 
     <script>
-        // 🎬 VIDEO HANDLER
+        // 🎬 VIDEO HANDLER: Manages audio/playback on marker visibility
         AFRAME.registerComponent('videohandler', {
             init: function () {
                 const marker = this.el;
-                const videoElement = marker.querySelector('a-video');
-                if (!videoElement) return;
-                
-                this.videoSelector = videoElement.getAttribute('src');
+                this.videoSelector = marker.querySelector('a-video').getAttribute('src');
                 this.video = document.querySelector(this.videoSelector);
 
                 marker.addEventListener('markerFound', () => {
+                    // Stop other videos to save performance
                     document.querySelectorAll("video").forEach(v => {
                         v.pause();
                         v.muted = true;
@@ -39,13 +37,13 @@
             }
         });
 
-        // 📐 FIT VIDEO
+        // 📐 FIT VIDEO: Adjusts plane aspect ratio to match video file
         AFRAME.registerComponent('fit-video', {
             init: function () {
                 const video = document.querySelector(this.el.getAttribute('src'));
                 const el = this.el;
                 const setSize = () => {
-                    if (video && video.videoWidth && video.videoHeight) {
+                    if (video.videoWidth && video.videoHeight) {
                         const ratio = video.videoWidth / video.videoHeight;
                         const baseWidth = 3; 
                         el.setAttribute('width', baseWidth);
@@ -58,39 +56,25 @@
             }
         });
 
-        // 🔥 CHỖ CẦN FIX: Thay đổi logic tính toán để không treo camera
+        // 🔥 ANTI-SHAKE: Smoothes movement using Linear Interpolation (Lerp)
         AFRAME.registerComponent('anti-shake', {
             init: function () {
                 this.prevPos = new THREE.Vector3();
-                this.prevQuat = new THREE.Quaternion(); // Dùng Quaternion thay vì Euler để tránh đứng máy
-                this.firstTick = true;
+                this.prevRot = new THREE.Euler();
             },
             tick: function () {
                 const obj = this.el.object3D;
-                if (this.firstTick) {
-                    this.prevPos.copy(obj.position);
-                    this.prevQuat.copy(obj.quaternion);
-                    this.firstTick = false;
-                    return;
-                }
-                // Nội suy (Lerp) vị trí và góc xoay mượt mà
-                obj.position.lerp(this.prevPos, 0.1);
-                obj.quaternion.slerp(this.prevQuat, 0.1); 
-                
+                obj.position.lerp(this.prevPos, 0.1); 
+                obj.rotation.x = obj.rotation.x * 0.9 + this.prevRot.x * 0.1;
+                obj.rotation.y = obj.rotation.y * 0.9 + this.prevRot.y * 0.1;
+                obj.rotation.z = obj.rotation.z * 0.9 + this.prevRot.z * 0.1;
                 this.prevPos.copy(obj.position);
-                this.prevQuat.copy(obj.quaternion);
+                this.prevRot.copy(obj.rotation);
             }
         });
 
+        // Mobile browser fix for autoplay
         document.addEventListener('DOMContentLoaded', () => {
-            // Cho phép âm thanh khi người dùng click lần đầu vào màn hình
-            document.body.addEventListener('click', function() {
-                const vids = document.querySelectorAll("video");
-                vids.forEach(v => {
-                    v.muted = false;
-                });
-            }, { once: true });
-
             const vids = document.querySelectorAll("video");
             vids.forEach(v => {
                 v.muted = true;
@@ -102,16 +86,12 @@
 </head>
 
 <body style="margin: 0; overflow: hidden;">
-    <div style="position: fixed; top: 10px; width: 100%; text-align: center; z-index: 10; color: white; font-family: sans-serif; pointer-events: none;">
-        Chạm màn hình để bật âm thanh
-    </div>
-
     <a-scene 
         embedded 
         vr-mode-ui="enabled: false" 
         loading-screen="enabled: false" 
-        renderer="logarithmicDepthBuffer: true; precision: medium;" 
-        arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false; detectionMode: mono_and_matrix;"
+        renderer="logarithmicDepthBuffer: true;" 
+        arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
     >
         <a-assets>
             <video id="vid1" src="assets/asset.mp4" preload="auto" loop crossorigin="anonymous"></video>
