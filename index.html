@@ -21,14 +21,12 @@
 
                 marker.addEventListener('markerFound', () => {
 
-                    // ❌ TẮT TẤT CẢ VIDEO
                     document.querySelectorAll("video").forEach(v => {
                         v.pause();
                         v.currentTime = 0;
                         v.muted = true;
                     });
 
-                    // ✅ CHỈ BẬT VIDEO ĐANG QUÉT
                     const video = document.querySelector(
                         marker.querySelector('a-video').getAttribute('src')
                     );
@@ -95,12 +93,15 @@
             }
         });
 
-        // 🔊 CLICK 1 LẦN ĐỂ MỞ AUDIO (mobile)
-        document.addEventListener('click', function () {
+        // ✅ FIX: KHÔNG CẦN CHẠM MÀN HÌNH
+        document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll("video").forEach(v => {
-                v.play().catch(() => {});
+                v.muted = true;
+                v.setAttribute("playsinline", "");
+                v.setAttribute("webkit-playsinline", "");
             });
         });
+
     </script>
 </head>
 
