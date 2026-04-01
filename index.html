@@ -14,17 +14,27 @@
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
 
     <script>
-        // 🎬 VIDEO HANDLER
+        // 🎬 VIDEO HANDLER (FIX ÂM THANH)
         AFRAME.registerComponent('videohandler', {
             init: function () {
                 const marker = this.el;
 
                 marker.addEventListener('markerFound', () => {
+
+                    // ❌ TẮT TẤT CẢ VIDEO
+                    document.querySelectorAll("video").forEach(v => {
+                        v.pause();
+                        v.currentTime = 0;
+                        v.muted = true;
+                    });
+
+                    // ✅ CHỈ BẬT VIDEO ĐANG QUÉT
                     const video = document.querySelector(
                         marker.querySelector('a-video').getAttribute('src')
                     );
+
                     if (video) {
-                        video.currentTime = 0;
+                        video.muted = false;
                         video.play().catch(() => {});
                     }
                 });
@@ -33,8 +43,10 @@
                     const video = document.querySelector(
                         marker.querySelector('a-video').getAttribute('src')
                     );
+
                     if (video) {
                         video.pause();
+                        video.muted = true;
                     }
                 });
             }
@@ -63,8 +75,7 @@
             }
         });
 
-
-        // 🔥 CHỐNG RUNG (SMOOTH NÂNG CAO)
+        // 🔥 CHỐNG RUNG
         AFRAME.registerComponent('anti-shake', {
             init: function () {
                 this.prevPos = new THREE.Vector3();
@@ -73,10 +84,8 @@
             tick: function () {
                 const obj = this.el.object3D;
 
-                // mượt vị trí
                 obj.position.lerp(this.prevPos, 0.1);
 
-                // mượt rotation
                 obj.rotation.x = obj.rotation.x * 0.9 + this.prevRot.x * 0.1;
                 obj.rotation.y = obj.rotation.y * 0.9 + this.prevRot.y * 0.1;
                 obj.rotation.z = obj.rotation.z * 0.9 + this.prevRot.z * 0.1;
@@ -86,17 +95,9 @@
             }
         });
 
-
-         // 🔊 CLICK BẬT ÂM THANH (mobile)
-        document.addEventListener('click', function () {
-            const video = document.querySelector("#vid");
-            video.muted = false;
-        });
-
-        // 🔥 FIX AUTOPLAY MOBILE
+        // 🔊 CLICK 1 LẦN ĐỂ MỞ AUDIO (mobile)
         document.addEventListener('click', function () {
             document.querySelectorAll("video").forEach(v => {
-                v.muted = false;
                 v.play().catch(() => {});
             });
         });
