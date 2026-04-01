@@ -22,11 +22,9 @@
               marker.addEventListener('markerFound', () => {
 
                     setTimeout(() => {   // ✅ delay nhẹ để chắc chắn lấy được video
-                
-                        const videoSrc = marker.querySelector('a-video').getAttribute('src');
-                        const currentVideo = document.querySelector(videoSrc);
-                
-                        if (!currentVideo) return; // tránh lỗi null
+                         const currentVideo = document.querySelector(
+                         marker.querySelector('a-video').getAttribute('src')
+                     );
                 
                         // ✅ tắt video khác
                         document.querySelectorAll("video").forEach(v => {
@@ -37,16 +35,16 @@
                         });
                 
                         // ✅ bật video hiện tại
-                        currentVideo.muted = false;
-                        currentVideo.play().catch(() => {});
-                
-                    }, 100); // chỉ 0.1s
+                         if (currentVideo && currentVideo.paused) {
+                                currentVideo.muted = false;
+                                currentVideo.play().catch(() => {});
+                         }
                 });
                 
                 marker.addEventListener('markerLost', () => {
-                    const videoSrc = marker.querySelector('a-video').getAttribute('src');
-                    const video = document.querySelector(videoSrc);
-                
+                    const video = document.querySelector(
+                    marker.querySelector('a-video').getAttribute('src')
+                ); 
                     if (video) {
                         video.pause();
                         video.muted = true;
