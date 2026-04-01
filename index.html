@@ -63,6 +63,36 @@
             }
         });
 
+
+        // 🔥 CHỐNG RUNG (SMOOTH NÂNG CAO)
+        AFRAME.registerComponent('anti-shake', {
+            init: function () {
+                this.prevPos = new THREE.Vector3();
+                this.prevRot = new THREE.Euler();
+            },
+            tick: function () {
+                const obj = this.el.object3D;
+
+                // mượt vị trí
+                obj.position.lerp(this.prevPos, 0.1);
+
+                // mượt rotation
+                obj.rotation.x = obj.rotation.x * 0.9 + this.prevRot.x * 0.1;
+                obj.rotation.y = obj.rotation.y * 0.9 + this.prevRot.y * 0.1;
+                obj.rotation.z = obj.rotation.z * 0.9 + this.prevRot.z * 0.1;
+
+                this.prevPos.copy(obj.position);
+                this.prevRot.copy(obj.rotation);
+            }
+        });
+
+
+         // 🔊 CLICK BẬT ÂM THANH (mobile)
+        document.addEventListener('click', function () {
+            const video = document.querySelector("#vid");
+            video.muted = false;
+        });
+
         // 🔥 FIX AUTOPLAY MOBILE
         document.addEventListener('click', function () {
             document.querySelectorAll("video").forEach(v => {
