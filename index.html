@@ -95,10 +95,12 @@
             }
         });
 
-        // 🔊 CLICK 1 LẦN ĐỂ MỞ AUDIO (mobile)
-        document.addEventListener('click', function () {
+
+        document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll("video").forEach(v => {
-                v.play().catch(() => {});
+                v.muted = true;
+                v.setAttribute("playsinline", "");
+                v.setAttribute("webkit-playsinline", "");
             });
         });
     </script>
