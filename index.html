@@ -19,38 +19,37 @@
             init: function () {
                 const marker = this.el;
 
-                marker.addEventListener('markerFound', () => {
+               marker.addEventListener('markerFound', () => {
 
-                    // ❌ TẮT TẤT CẢ VIDEO
-                    document.querySelectorAll("video").forEach(v => {
+                const currentVideo = document.querySelector(
+                    marker.querySelector('a-video').getAttribute('src')
+                );
+            
+                // ✅ CHỈ TẮT VIDEO KHÁC (KHÔNG reset)
+                document.querySelectorAll("video").forEach(v => {
+                    if (v !== currentVideo) {
                         v.pause();
-                        v.currentTime = 0;
                         v.muted = true;
-                    });
-
-                    // ✅ CHỈ BẬT VIDEO ĐANG QUÉT
-                    const video = document.querySelector(
-                        marker.querySelector('a-video').getAttribute('src')
-                    );
-
-                    if (video) {
-                        video.muted = false;
-                        video.play().catch(() => {});
                     }
                 });
-
-                marker.addEventListener('markerLost', () => {
-                    const video = document.querySelector(
-                        marker.querySelector('a-video').getAttribute('src')
-                    );
-
-                    if (video) {
-                        video.pause();
-                        video.muted = true;
-                    }
-                });
-            }
-        });
+            
+                // ✅ BẬT VIDEO ĐANG QUÉT
+                if (currentVideo) {
+                    currentVideo.muted = false;
+                    currentVideo.play().catch(() => {});
+                }
+            });
+            
+            marker.addEventListener('markerLost', () => {
+                const video = document.querySelector(
+                    marker.querySelector('a-video').getAttribute('src')
+                );
+            
+                if (video) {
+                    video.pause();
+                    video.muted = true;
+                }
+            });
 
         // 📐 FIT VIDEO
         AFRAME.registerComponent('fit-video', {
