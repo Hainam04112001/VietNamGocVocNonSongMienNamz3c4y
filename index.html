@@ -14,28 +14,27 @@
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
 
     <script>
-        // 🎬 VIDEO HANDLER (FIX ÂM THANH)
+        // 🎬 VIDEO HANDLER (FIX KHÔNG GIẬT CAMERA)
         AFRAME.registerComponent('videohandler', {
             init: function () {
                 const marker = this.el;
 
                 marker.addEventListener('markerFound', () => {
 
-                    // ❌ TẮT TẤT CẢ VIDEO
-                    document.querySelectorAll("video").forEach(v => {
-                        v.pause();
-                        v.currentTime = 0;
-                        v.muted = true;
-                    });
-
-                    // ✅ CHỈ BẬT VIDEO ĐANG QUÉT
-                    const video = document.querySelector(
+                    const currentVideo = document.querySelector(
                         marker.querySelector('a-video').getAttribute('src')
                     );
 
-                    if (video) {
-                        video.muted = false;
-                        video.play().catch(() => {});
+                    document.querySelectorAll("video").forEach(v => {
+                        if (v !== currentVideo) {
+                            v.pause();
+                            v.muted = true;
+                        }
+                    });
+
+                    if (currentVideo) {
+                        currentVideo.muted = false;
+                        currentVideo.play().catch(() => {});
                     }
                 });
 
@@ -95,12 +94,15 @@
             }
         });
 
-        // 🔊 CLICK 1 LẦN ĐỂ MỞ AUDIO (mobile)
-        document.addEventListener('click', function () {
+        // ✅ FIX autoplay mobile
+        document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll("video").forEach(v => {
-                v.play().catch(() => {});
+                v.muted = true;
+                v.setAttribute("playsinline", "");
+                v.setAttribute("webkit-playsinline", "");
             });
         });
+
     </script>
 </head>
 
@@ -111,7 +113,7 @@
     vr-mode-ui="enabled: false"
     loading-screen="enabled: false"
     renderer="logarithmicDepthBuffer: true;"
-    arjs="sourceType: webcam; facingMode: environment;"
+    arjs="sourceType: webcam; facingMode: environment; detectionMode: mono;"
 >
 
     <!-- 🎬 VIDEO -->
@@ -125,32 +127,32 @@
     </a-assets>
 
     <!-- 📕 SÁCH CHÍNH -->
-    <a-marker type="pattern" url="assets/marker.patt" videohandler smooth="true" smoothCount="20">
+    <a-marker type="pattern" url="assets/marker.patt" emitevents="true" videohandler smooth="true" smoothCount="20">
         <a-video src="#vid1" rotation="-90 0 0"></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 1 -->
-    <a-marker type="pattern" url="assets/marker1.patt" videohandler smooth="true" smoothCount="20">
+    <a-marker type="pattern" url="assets/marker1.patt" emitevents="true" videohandler smooth="true" smoothCount="20">
         <a-video src="#vid2" rotation="-90 0 0"></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 2 -->
-    <a-marker type="pattern" url="assets/marker2.patt" videohandler smooth="true" smoothCount="20">
+    <a-marker type="pattern" url="assets/marker2.patt" emitevents="true" videohandler smooth="true" smoothCount="20">
         <a-video src="#vid3" rotation="-90 0 0"></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 3 -->
-    <a-marker type="pattern" url="assets/marker3.patt" videohandler smooth="true" smoothCount="20">
+    <a-marker type="pattern" url="assets/marker3.patt" emitevents="true" videohandler smooth="true" smoothCount="20">
         <a-video src="#vid4" rotation="-90 0 0"></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 4 -->
-    <a-marker type="pattern" url="assets/marker4.patt" videohandler smooth="true" smoothCount="20">
+    <a-marker type="pattern" url="assets/marker4.patt" emitevents="true" videohandler smooth="true" smoothCount="20">
         <a-video src="#vid5" rotation="-90 0 0"></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 5 -->
-    <a-marker type="pattern" url="assets/marker5.patt" videohandler smooth="true" smoothCount="20">
+    <a-marker type="pattern" url="assets/marker5.patt" emitevents="true" videohandler smooth="true" smoothCount="20">
         <a-video src="#vid6" rotation="-90 0 0"></a-video>
     </a-marker>
 
