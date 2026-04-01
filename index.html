@@ -4,15 +4,9 @@
     <meta charset="utf-8">
     <title>AR Multi Books PRO</title>
 
-    <!-- A-Frame -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-
-    <!-- AR.js -->
+    <!-- ✅ FIX VERSION -->
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ar.js@3.3.2/aframe/build/aframe-ar.js"></script>
-
-    <!-- Gesture -->
-    <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
 
     <script>
         // 🎬 VIDEO HANDLER
@@ -64,27 +58,7 @@
             }
         });
 
-        // 🔥 CHỐNG RUNG
-        AFRAME.registerComponent('anti-shake', {
-            init: function () {
-                this.prevPos = new THREE.Vector3();
-                this.prevRot = new THREE.Euler();
-            },
-            tick: function () {
-                const obj = this.el.object3D;
-
-                obj.position.lerp(this.prevPos, 0.15);
-
-                obj.rotation.x = obj.rotation.x * 0.9 + this.prevRot.x * 0.1;
-                obj.rotation.y = obj.rotation.y * 0.9 + this.prevRot.y * 0.1;
-                obj.rotation.z = obj.rotation.z * 0.9 + this.prevRot.z * 0.1;
-
-                this.prevPos.copy(obj.position);
-                this.prevRot.copy(obj.rotation);
-            }
-        });
-
-        // 🔊 Fix mobile autoplay
+        // 🔥 FIX AUTOPLAY MOBILE
         document.addEventListener('click', function () {
             document.querySelectorAll("video").forEach(v => {
                 v.muted = false;
@@ -101,60 +75,47 @@
     vr-mode-ui="enabled: false"
     loading-screen="enabled: false"
     renderer="logarithmicDepthBuffer: true;"
-    arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false; trackingMethod: best;"
-    gesture-detector
+    arjs="sourceType: webcam; facingMode: environment;"
 >
 
     <!-- 🎬 VIDEO -->
     <a-assets>
-        <video id="vid1" src="assets/asset.mp4" preload="auto" autoplay loop muted playsinline webkit-playsinline></video>
-        <video id="vid2" src="assets/sach1.mp4" preload="auto" autoplay loop muted playsinline webkit-playsinline></video>
-        <video id="vid3" src="assets/sach2.mp4" preload="auto" autoplay loop muted playsinline webkit-playsinline></video>
-        <video id="vid4" src="assets/sach3.mp4" preload="auto" autoplay loop muted playsinline webkit-playsinline></video>
-        <video id="vid5" src="assets/sach4.mp4" preload="auto" autoplay loop muted playsinline webkit-playsinline></video>
-        <video id="vid6" src="assets/sach5.mp4" preload="auto" autoplay loop muted playsinline webkit-playsinline></video>
+        <video id="vid1" src="assets/asset.mp4" preload="auto" autoplay loop muted playsinline></video>
+        <video id="vid2" src="assets/sach1.mp4" preload="auto" autoplay loop muted playsinline></video>
+        <video id="vid3" src="assets/sach2.mp4" preload="auto" autoplay loop muted playsinline></video>
+        <video id="vid4" src="assets/sach3.mp4" preload="auto" autoplay loop muted playsinline></video>
+        <video id="vid5" src="assets/sach4.mp4" preload="auto" autoplay loop muted playsinline></video>
+        <video id="vid6" src="assets/sach5.mp4" preload="auto" autoplay loop muted playsinline></video>
     </a-assets>
 
     <!-- 📕 SÁCH CHÍNH -->
-    <a-marker type="pattern" url="assets/marker.patt" videohandler smooth="true" smoothCount="25" smoothTolerance="0.004" smoothThreshold="10">
-        <a-entity anti-shake>
-            <a-video src="#vid1" fit-video rotation="-90 0 0"></a-video>
-        </a-entity>
+    <a-marker type="pattern" url="assets/marker.patt" videohandler smooth="true" smoothCount="20">
+        <a-video src="#vid1" rotation="-90 0 0"></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 1 -->
-    <a-marker type="pattern" url="assets/marker1.patt" videohandler smooth="true" smoothCount="25" smoothTolerance="0.004" smoothThreshold="10">
-        <a-entity anti-shake>
-            <a-video src="#vid2" fit-video rotation="-90 0 0"></a-video>
-        </a-entity>
+    <a-marker type="pattern" url="assets/marker1.patt" videohandler smooth="true" smoothCount="20">
+        <a-video src="#vid2" rotation="-90 0 0"></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 2 -->
-    <a-marker type="pattern" url="assets/marker2.patt" videohandler smooth="true" smoothCount="25" smoothTolerance="0.004" smoothThreshold="10">
-        <a-entity anti-shake>
-            <a-video src="#vid3" fit-video rotation="-90 0 0"></a-video>
-        </a-entity>
+    <a-marker type="pattern" url="assets/marker2.patt" videohandler smooth="true" smoothCount="20">
+        <a-video src="#vid3" rotation="-90 0 0"></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 3 -->
-    <a-marker type="pattern" url="assets/marker3.patt" videohandler smooth="true" smoothCount="25" smoothTolerance="0.004" smoothThreshold="10">
-        <a-entity anti-shake>
-            <a-video src="#vid4" fit-video rotation="-90 0 0"></a-video>
-        </a-entity>
+    <a-marker type="pattern" url="assets/marker3.patt" videohandler smooth="true" smoothCount="20">
+        <a-video src="#vid4" rotation="-90 0 0"></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 4 -->
-    <a-marker type="pattern" url="assets/marker4.patt" videohandler smooth="true" smoothCount="25" smoothTolerance="0.004" smoothThreshold="10">
-        <a-entity anti-shake>
-            <a-video src="#vid5" fit-video rotation="-90 0 0"></a-video>
-        </a-entity>
+    <a-marker type="pattern" url="assets/marker4.patt" videohandler smooth="true" smoothCount="20">
+        <a-video src="#vid5" rotation="-90 0 0"></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 5 -->
-    <a-marker type="pattern" url="assets/marker5.patt" videohandler smooth="true" smoothCount="25" smoothTolerance="0.004" smoothThreshold="10">
-        <a-entity anti-shake>
-            <a-video src="#vid6" fit-video rotation="-90 0 0"></a-video>
-        </a-entity>
+    <a-marker type="pattern" url="assets/marker5.patt" videohandler smooth="true" smoothCount="20">
+        <a-video src="#vid6" rotation="-90 0 0"></a-video>
     </a-marker>
 
     <!-- CAMERA -->
