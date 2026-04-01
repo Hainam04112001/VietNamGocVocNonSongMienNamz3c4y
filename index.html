@@ -19,37 +19,39 @@
             init: function () {
                 const marker = this.el;
 
-               marker.addEventListener('markerFound', () => {
+              marker.addEventListener('markerFound', () => {
 
-                const currentVideo = document.querySelector(
-                    marker.querySelector('a-video').getAttribute('src')
-                );
-            
-                // ✅ CHỈ TẮT VIDEO KHÁC (KHÔNG reset)
-                document.querySelectorAll("video").forEach(v => {
-                    if (v !== currentVideo) {
-                        v.pause();
-                        v.muted = true;
+                    setTimeout(() => {   // ✅ delay nhẹ để chắc chắn lấy được video
+                
+                        const videoSrc = marker.querySelector('a-video').getAttribute('src');
+                        const currentVideo = document.querySelector(videoSrc);
+                
+                        if (!currentVideo) return; // tránh lỗi null
+                
+                        // ✅ tắt video khác
+                        document.querySelectorAll("video").forEach(v => {
+                            if (v !== currentVideo) {
+                                v.pause();
+                                v.muted = true;
+                            }
+                        });
+                
+                        // ✅ bật video hiện tại
+                        currentVideo.muted = false;
+                        currentVideo.play().catch(() => {});
+                
+                    }, 100); // chỉ 0.1s
+                });
+                
+                marker.addEventListener('markerLost', () => {
+                    const videoSrc = marker.querySelector('a-video').getAttribute('src');
+                    const video = document.querySelector(videoSrc);
+                
+                    if (video) {
+                        video.pause();
+                        video.muted = true;
                     }
                 });
-            
-                // ✅ BẬT VIDEO ĐANG QUÉT
-                if (currentVideo) {
-                    currentVideo.muted = false;
-                    currentVideo.play().catch(() => {});
-                }
-            });
-            
-            marker.addEventListener('markerLost', () => {
-                const video = document.querySelector(
-                    marker.querySelector('a-video').getAttribute('src')
-                );
-            
-                if (video) {
-                    video.pause();
-                    video.muted = true;
-                }
-            });
 
         // 📐 FIT VIDEO
         AFRAME.registerComponent('fit-video', {
@@ -72,6 +74,13 @@
 
                 setSize();
             }
+        });
+
+        // 🔊 CLICK 1 LẦN ĐỂ MỞ AUDIO (mobile)
+        document.addEventListener('click', function () {
+            document.querySelectorAll("video").forEach(v => {
+                v.play().catch(() => {});
+            });
         });
 
         // 🔥 CHỐNG RUNG
