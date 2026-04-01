@@ -9,15 +9,17 @@
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
 
     <script>
-        // 🎬 VIDEO HANDLER: Manages audio/playback on marker visibility
+        // 🎬 VIDEO HANDLER
         AFRAME.registerComponent('videohandler', {
             init: function () {
                 const marker = this.el;
-                this.videoSelector = marker.querySelector('a-video').getAttribute('src');
+                const videoElement = marker.querySelector('a-video');
+                if (!videoElement) return;
+                
+                this.videoSelector = videoElement.getAttribute('src');
                 this.video = document.querySelector(this.videoSelector);
 
                 marker.addEventListener('markerFound', () => {
-                    // Stop other videos to save performance
                     document.querySelectorAll("video").forEach(v => {
                         v.pause();
                         v.muted = true;
@@ -37,13 +39,13 @@
             }
         });
 
-        // 📐 FIT VIDEO: Adjusts plane aspect ratio to match video file
+        // 📐 FIT VIDEO
         AFRAME.registerComponent('fit-video', {
             init: function () {
                 const video = document.querySelector(this.el.getAttribute('src'));
                 const el = this.el;
                 const setSize = () => {
-                    if (video.videoWidth && video.videoHeight) {
+                    if (video && video.videoWidth && video.videoHeight) {
                         const ratio = video.videoWidth / video.videoHeight;
                         const baseWidth = 3; 
                         el.setAttribute('width', baseWidth);
@@ -56,24 +58,31 @@
             }
         });
 
-        // 🔥 ANTI-SHAKE: Smoothes movement using Linear Interpolation (Lerp)
+        // 🔥 FIX ANTI-SHAKE (Nguyên nhân gây treo camera)
         AFRAME.registerComponent('anti-shake', {
             init: function () {
+                // Khởi tạo giá trị ban đầu để tránh undefined khi lerp
                 this.prevPos = new THREE.Vector3();
-                this.prevRot = new THREE.Euler();
+                this.prevRot = new THREE.Quaternion();
+                this.initialized = false;
             },
             tick: function () {
                 const obj = this.el.object3D;
-                obj.position.lerp(this.prevPos, 0.1); 
-                obj.rotation.x = obj.rotation.x * 0.9 + this.prevRot.x * 0.1;
-                obj.rotation.y = obj.rotation.y * 0.9 + this.prevRot.y * 0.1;
-                obj.rotation.z = obj.rotation.z * 0.9 + this.prevRot.z * 0.1;
+                if (!this.initialized) {
+                    this.prevPos.copy(obj.position);
+                    this.prevRot.copy(obj.quaternion);
+                    this.initialized = true;
+                    return;
+                }
+                // Sử dụng Lerp mượt mà hơn và không can thiệp trực tiếp Euler để tránh lỗi loop
+                obj.position.lerp(this.prevPos, 0.1);
+                obj.quaternion.slerp(this.prevRot, 0.1);
+                
                 this.prevPos.copy(obj.position);
-                this.prevRot.copy(obj.rotation);
+                this.prevRot.copy(obj.quaternion);
             }
         });
 
-        // Mobile browser fix for autoplay
         document.addEventListener('DOMContentLoaded', () => {
             const vids = document.querySelectorAll("video");
             vids.forEach(v => {
@@ -90,8 +99,8 @@
         embedded 
         vr-mode-ui="enabled: false" 
         loading-screen="enabled: false" 
-        renderer="logarithmicDepthBuffer: true;" 
-        arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
+        renderer="logarithmicDepthBuffer: true; precision: medium;" 
+        arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false; detectionMode: mono_and_matrix;"
     >
         <a-assets>
             <video id="vid1" src="assets/asset.mp4" preload="auto" loop crossorigin="anonymous"></video>
