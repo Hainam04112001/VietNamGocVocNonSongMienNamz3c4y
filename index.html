@@ -58,32 +58,39 @@
             }
         });
 
-        // 🔥 FIX ANTI-SHAKE (Nguyên nhân gây treo camera)
+        // 🔥 CHỖ CẦN FIX: Thay đổi logic tính toán để không treo camera
         AFRAME.registerComponent('anti-shake', {
             init: function () {
-                // Khởi tạo giá trị ban đầu để tránh undefined khi lerp
                 this.prevPos = new THREE.Vector3();
-                this.prevRot = new THREE.Quaternion();
-                this.initialized = false;
+                this.prevQuat = new THREE.Quaternion(); // Dùng Quaternion thay vì Euler để tránh đứng máy
+                this.firstTick = true;
             },
             tick: function () {
                 const obj = this.el.object3D;
-                if (!this.initialized) {
+                if (this.firstTick) {
                     this.prevPos.copy(obj.position);
-                    this.prevRot.copy(obj.quaternion);
-                    this.initialized = true;
+                    this.prevQuat.copy(obj.quaternion);
+                    this.firstTick = false;
                     return;
                 }
-                // Sử dụng Lerp mượt mà hơn và không can thiệp trực tiếp Euler để tránh lỗi loop
+                // Nội suy (Lerp) vị trí và góc xoay mượt mà
                 obj.position.lerp(this.prevPos, 0.1);
-                obj.quaternion.slerp(this.prevRot, 0.1);
+                obj.quaternion.slerp(this.prevQuat, 0.1); 
                 
                 this.prevPos.copy(obj.position);
-                this.prevRot.copy(obj.quaternion);
+                this.prevQuat.copy(obj.quaternion);
             }
         });
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Cho phép âm thanh khi người dùng click lần đầu vào màn hình
+            document.body.addEventListener('click', function() {
+                const vids = document.querySelectorAll("video");
+                vids.forEach(v => {
+                    v.muted = false;
+                });
+            }, { once: true });
+
             const vids = document.querySelectorAll("video");
             vids.forEach(v => {
                 v.muted = true;
@@ -95,6 +102,10 @@
 </head>
 
 <body style="margin: 0; overflow: hidden;">
+    <div style="position: fixed; top: 10px; width: 100%; text-align: center; z-index: 10; color: white; font-family: sans-serif; pointer-events: none;">
+        Chạm màn hình để bật âm thanh
+    </div>
+
     <a-scene 
         embedded 
         vr-mode-ui="enabled: false" 
