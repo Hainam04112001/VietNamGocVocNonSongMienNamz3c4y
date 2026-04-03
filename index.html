@@ -16,43 +16,39 @@
 
     <script>
         // 🎬 VIDEO HANDLER
-        AFRAME.registerComponent('videohandler', {
-            init: function () {
-                const marker = this.el;
+AFRAME.registerComponent('videohandler', {
+    init: function () {
+        const marker = this.el;
+        let isPlaying = false;
 
-                marker.addEventListener('markerFound', () => {
+        marker.addEventListener('markerFound', () => {
+            if (isPlaying) return;
 
-                    // ❌ Tắt tất cả video
-                    document.querySelectorAll("video").forEach(v => {
-                        v.pause();
-                        v.currentTime = 0;
-                        v.muted = true;
-                    });
+            const video = document.querySelector(
+                marker.querySelector('a-video').getAttribute('src')
+            );
 
-                    // ✅ Bật video hiện tại
-                    const video = document.querySelector(
-                        marker.querySelector('a-video').getAttribute('src')
-                    );
-
-                    if (video) {
-                        video.currentTime = 0;
-                        video.muted = false;
-                        video.play().catch(() => {});
-                    }
-                });
-
-                marker.addEventListener('markerLost', () => {
-                    const video = document.querySelector(
-                        marker.querySelector('a-video').getAttribute('src')
-                    );
-
-                    if (video) {
-                        video.pause();
-                        video.muted = true;
-                    }
-                });
+            if (video) {
+                video.muted = false;
+                video.play().catch(() => {});
+                isPlaying = true;
             }
         });
+
+        marker.addEventListener('markerLost', () => {
+            const video = document.querySelector(
+                marker.querySelector('a-video').getAttribute('src')
+            );
+
+            if (video) {
+                video.pause();
+                video.currentTime = 0;
+                video.muted = true;
+                isPlaying = false;
+            }
+        });
+    }
+});
 
         // 📐 Tự fit tỷ lệ video
         AFRAME.registerComponent('fit-video', {
@@ -77,6 +73,40 @@
             }
         });
 
+        AFRAME.registerComponent('pinch-zoom', {
+                init: function () {
+                    let scale = 3.5;
+                    let startDist = 0;
+                    const el = this.el;
+            
+                    window.addEventListener('touchstart', (e) => {
+                        if (e.touches.length === 2) {
+                            startDist = getDistance(e.touches);
+                        }
+                    });
+            
+                    window.addEventListener('touchmove', (e) => {
+                        if (e.touches.length === 2) {
+                            const dist = getDistance(e.touches);
+                            let delta = dist - startDist;
+            
+                            scale += delta * 0.005;
+                            scale = Math.max(1.5, Math.min(scale, 8));
+            
+                            el.setAttribute('scale', `${scale} ${scale} ${scale}`);
+                            startDist = dist;
+                        }
+                    });
+            
+                    function getDistance(touches) {
+                        return Math.hypot(
+                            touches[0].clientX - touches[1].clientX,
+                            touches[0].clientY - touches[1].clientY
+                        );
+                    }
+                }
+            });
+        
         // 🔥 Chống rung
         AFRAME.registerComponent('anti-shake', {
             init: function () {
@@ -149,8 +179,15 @@
     </a-marker>
 
     <!-- 📗 SÁCH 1 -->
-    <a-marker type="pattern" url="assets/marker1.patt" videohandler smooth="true" smoothCount="30" gesture-detector>
-        <a-video src="#vid2" rotation="-90 0 0" fit-video scale="3.5 3.5 3.5" gesture-handler></a-video>
+    <a-marker type="pattern" url="assets/marker1.patt" videohandler smooth="true" smoothCount="30">
+        <a-video 
+            src="#vid1"
+            rotation="-90 0 0"
+            position="0 0.01 0"
+            fit-video
+            scale="3.5 3.5 3.5"
+            pinch-zoom>
+        </a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 2 -->
