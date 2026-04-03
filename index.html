@@ -125,9 +125,23 @@
     </a-assets>
 
     <!-- 📕 SÁCH CHÍNH -->
-    <a-marker type="pattern" url="assets/marker.patt" videohandler smooth="true" smoothCount="20">
-        <a-video src="#vid1" rotation="-90 0 0" fit-video scale="4 4 4"></a-video>
-    </a-marker>
+        <a-marker 
+            type="pattern" 
+            url="assets/marker.patt" 
+            videohandler 
+            smooth="true" 
+            smoothCount="30"
+            smoothTolerance="0.01"
+            anti-shake
+        >
+            <a-video 
+                src="#vid1"
+                rotation="-90 0 0"
+                position="0 0.01 0"
+                fit-video
+                scale="3.5 3.5 3.5">
+            </a-video>
+        </a-marker>
 
     <!-- 📗 SÁCH 1 -->
     <a-marker type="pattern" url="assets/marker1.patt" videohandler smooth="true" smoothCount="20">
