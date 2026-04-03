@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>AR Multi Books PRO</title>
 
+    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
 
     <!-- AR.js -->
@@ -14,26 +15,27 @@
     <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
 
     <script>
-        // 🎬 VIDEO HANDLER (FIX ÂM THANH)
+        // 🎬 VIDEO HANDLER
         AFRAME.registerComponent('videohandler', {
             init: function () {
                 const marker = this.el;
 
                 marker.addEventListener('markerFound', () => {
 
-                    // ❌ TẮT TẤT CẢ VIDEO
+                    // ❌ Tắt tất cả video
                     document.querySelectorAll("video").forEach(v => {
                         v.pause();
                         v.currentTime = 0;
                         v.muted = true;
                     });
 
-                    // ✅ CHỈ BẬT VIDEO ĐANG QUÉT
+                    // ✅ Bật video hiện tại
                     const video = document.querySelector(
                         marker.querySelector('a-video').getAttribute('src')
                     );
 
                     if (video) {
+                        video.currentTime = 0;
                         video.muted = false;
                         video.play().catch(() => {});
                     }
@@ -52,7 +54,7 @@
             }
         });
 
-        // 📐 FIT VIDEO
+        // 📐 Tự fit tỷ lệ video
         AFRAME.registerComponent('fit-video', {
             init: function () {
                 const src = this.el.getAttribute('src');
@@ -75,7 +77,7 @@
             }
         });
 
-        // 🔥 CHỐNG RUNG
+        // 🔥 Chống rung
         AFRAME.registerComponent('anti-shake', {
             init: function () {
                 this.prevPos = new THREE.Vector3();
@@ -95,16 +97,17 @@
             }
         });
 
-        // 🔊 CLICK 1 LẦN ĐỂ MỞ AUDIO (mobile)
+        // 🔊 Fix autoplay mobile
         document.addEventListener('click', function () {
             document.querySelectorAll("video").forEach(v => {
+                v.muted = false;
                 v.play().catch(() => {});
             });
         });
     </script>
 </head>
 
-<body style="margin: 0; overflow: hidden;">
+<body style="margin:0; overflow:hidden;">
 
 <a-scene
     embedded
@@ -125,49 +128,49 @@
     </a-assets>
 
     <!-- 📕 SÁCH CHÍNH -->
-        <a-marker 
-            type="pattern" 
-            url="assets/marker.patt" 
-            videohandler 
-            smooth="true" 
-            smoothCount="30"
-            smoothTolerance="0.01"
-            anti-shake
-            gesture-detector
-        >
-            <a-video 
-                src="#vid1"
-                rotation="-90 0 0"
-                position="0 0.01 0"
-                fit-video
-                scale="3.5 3.5 3.5"
-                gesture-handler>
-            </a-video>
-        </a-marker>
+    <a-marker 
+        type="pattern" 
+        url="assets/marker.patt" 
+        videohandler 
+        smooth="true" 
+        smoothCount="30"
+        smoothTolerance="0.01"
+        anti-shake
+        gesture-detector
+    >
+        <a-video 
+            src="#vid1"
+            rotation="-90 0 0"
+            position="0 0.01 0"
+            fit-video
+            scale="3.5 3.5 3.5"
+            gesture-handler="minScale: 2; maxScale: 8">
+        </a-video>
+    </a-marker>
 
     <!-- 📗 SÁCH 1 -->
-    <a-marker type="pattern" url="assets/marker1.patt" videohandler smooth="true" smoothCount="20">
-        <a-video src="#vid2" rotation="-90 0 0" fit-video scale="4 4 4"></a-video>
+    <a-marker type="pattern" url="assets/marker1.patt" videohandler smooth="true" smoothCount="30" gesture-detector>
+        <a-video src="#vid2" rotation="-90 0 0" fit-video scale="3.5 3.5 3.5" gesture-handler></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 2 -->
-    <a-marker type="pattern" url="assets/marker2.patt" videohandler smooth="true" smoothCount="20">
-        <a-video src="#vid3" rotation="-90 0 0" fit-video scale="4 4 4"></a-video>
+    <a-marker type="pattern" url="assets/marker2.patt" videohandler smooth="true" smoothCount="30" gesture-detector>
+        <a-video src="#vid3" rotation="-90 0 0" fit-video scale="3.5 3.5 3.5" gesture-handler></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 3 -->
-    <a-marker type="pattern" url="assets/marker3.patt" videohandler smooth="true" smoothCount="20">
-        <a-video src="#vid4" rotation="-90 0 0" fit-video scale="4 4 4"></a-video>
+    <a-marker type="pattern" url="assets/marker3.patt" videohandler smooth="true" smoothCount="30" gesture-detector>
+        <a-video src="#vid4" rotation="-90 0 0" fit-video scale="3.5 3.5 3.5" gesture-handler></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 4 -->
-    <a-marker type="pattern" url="assets/marker4.patt" videohandler smooth="true" smoothCount="20">
-        <a-video src="#vid5" rotation="-90 0 0" fit-video scale="4 4 4"></a-video>
+    <a-marker type="pattern" url="assets/marker4.patt" videohandler smooth="true" smoothCount="30" gesture-detector>
+        <a-video src="#vid5" rotation="-90 0 0" fit-video scale="3.5 3.5 3.5" gesture-handler></a-video>
     </a-marker>
 
     <!-- 📗 SÁCH 5 -->
-    <a-marker type="pattern" url="assets/marker5.patt" videohandler smooth="true" smoothCount="20">
-        <a-video src="#vid6" rotation="-90 0 0" fit-video scale="4 4 4"></a-video>
+    <a-marker type="pattern" url="assets/marker5.patt" videohandler smooth="true" smoothCount="30" gesture-detector>
+        <a-video src="#vid6" rotation="-90 0 0" fit-video scale="3.5 3.5 3.5" gesture-handler></a-video>
     </a-marker>
 
     <!-- CAMERA -->
