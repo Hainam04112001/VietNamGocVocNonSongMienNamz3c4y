@@ -1,116 +1,79 @@
-```html
 <!doctype html>
 <html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <head>
+        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+        <script>
+            AFRAME.registerComponent('videohandler', {
+                init: function () {
+                    var marker = this.el;
+                    this.vid = document.querySelector("#vid");
 
-<title>AR Video</title>
+                    marker.addEventListener('markerFound', function () {
+                        this.toggle = true;
+                        this.vid.play();
+                    }.bind(this));
 
-<script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+                    marker.addEventListener('markerLost', function () {
+                        this.toggle = false;
+                        this.vid.pause();
+                    }.bind(this));
+                },
+            });
+        </script>
+    </head>
 
-<script>
-AFRAME.registerComponent('videohandler', {
+    <body style="margin: 0; overflow: hidden;">
+        <a-scene
+            vr-mode-ui="enabled: false"
+            loading-screen="enabled: false;"
+            arjs='sourceType: webcam; debugUIEnabled: false;'
+            id="scene"
+            embedded
+            gesture-detector
+        >
+            <a-assets>
+                <video
+                    id="vid"
+                    src="assets/asset.mp4"
+                    preload="auto"
+                    response-type="arraybuffer"
+                    loop
+                    crossorigin
+                    webkit-playsinline
+                    autoplay
+                    muted
+                    playsinline
+                ></video>
+            </a-assets>
 
-    init: function () {
+            <a-marker
+                type="pattern"
+                preset="custom"
+                url="assets/marker.patt"
+                videohandler
+                smooth="true"
+                smoothCount="10"
+                smoothTolerance="0.01"
+                smoothThreshold="5"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+                id="markerA"
+            >
+                <a-video
+                    src="#vid"
+                    scale="1 1 1"
+                    position="0 0.1 0"
+                    rotation="-90 0 0"
+                    class="clickable"
+                    gesture-handler
+                ></a-video>
+            </a-marker>
 
-        const marker = this.el;
-        const video = document.getElementById("vid");
-
-        marker.addEventListener('markerFound', () => {
-
-            console.log("Marker Found");
-
-            video.muted = false;
-
-            const playPromise = video.play();
-
-            if (playPromise !== undefined) {
-                playPromise
-                    .then(() => {
-                        console.log("Video playing");
-                    })
-                    .catch(err => {
-                        console.log("Autoplay blocked:", err);
-                    });
-            }
-
-        });
-
-        marker.addEventListener('markerLost', () => {
-
-            console.log("Marker Lost");
-
-            video.pause();
-
-        });
-
-    }
-
-});
-</script>
-
-<style>
-html,
-body{
-    margin:0;
-    overflow:hidden;
-    width:100%;
-    height:100%;
-}
-</style>
-
-</head>
-
-<body>
-
-<a-scene
-    embedded
-    vr-mode-ui="enabled:false"
-    loading-screen="enabled:false"
-    arjs="sourceType:webcam; debugUIEnabled:false;"
->
-
-    <a-assets>
-
-        <video
-            id="vid"
-            src="assets/asset7.mp4"
-            preload="auto"
-            loop
-            playsinline
-            webkit-playsinline
-            crossorigin="anonymous">
-        </video>
-
-    </a-assets>
-
-    <a-marker
-        type="pattern"
-        url="assets/marker7.patt"
-        videohandler
-        smooth="true"
-        smoothCount="20"
-        smoothTolerance="0.01"
-        smoothThreshold="5"
-        emitevents="true"
-    >
-
-        <a-video
-            src="#vid"
-            width="2"
-            height="1.125"
-            rotation="-90 0 0"
-            position="0 0.1 0">
-        </a-video>
-
-    </a-marker>
-
-    <a-entity camera></a-entity>
-
-</a-scene>
-
-</body>
+            <a-entity camera></a-entity>
+        </a-scene>
+    </body>
 </html>
-```
