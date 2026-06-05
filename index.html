@@ -22,11 +22,13 @@
                 marker.addEventListener('markerFound', () => {
 
                     // ❌ TẮT TẤT CẢ VIDEO
-                    document.querySelectorAll("video").forEach(v => {
-                        v.pause();
-                        v.currentTime = 0;
-                        v.muted = true;
-                    });
+document.querySelectorAll("video").forEach(v => {
+    if (v !== video) {
+        v.pause();
+        v.currentTime = 0;
+        v.muted = true;
+    }
+});
 
                     // ✅ CHỈ BẬT VIDEO ĐANG QUÉT
                     const video = document.querySelector(
