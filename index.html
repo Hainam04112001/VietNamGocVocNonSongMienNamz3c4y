@@ -36,7 +36,7 @@ document.querySelectorAll("video").forEach(v => {
                     );
 
                     if (video) {
-                        video.muted = false;
+                        video.muted = true;
                         video.play().catch(() => {});
                     }
                 });
