@@ -15,37 +15,59 @@
 
     <script>
         // 🎬 VIDEO HANDLER (FIX ÂM THANH)
-        AFRAME.registerComponent('videohandler', {
-            init: function () {
-                const marker = this.el;
+      AFRAME.registerComponent('videohandler', {
+    init: function () {
 
-                marker.addEventListener('markerFound', () => {
+        const marker = this.el;
+        let videoPlaying = false;
 
+        marker.addEventListener('markerFound', () => {
 
+            const video = document.querySelector(
+                marker.querySelector('a-video').getAttribute('src')
+            );
 
-                    // ✅ CHỈ BẬT VIDEO ĐANG QUÉT
-                    const video = document.querySelector(
-                        marker.querySelector('a-video').getAttribute('src')
-                    );
+            if (!video) return;
 
-                    if (video) {
-                        video.muted = false;
-                        video.play().catch(() => {});
-                    }
+            // Nếu video đang phát rồi thì bỏ qua
+            if (videoPlaying) return;
+
+            // Tạm dừng các video khác
+            document.querySelectorAll('video').forEach(v => {
+                if (v !== video) {
+                    v.pause();
+                    v.muted = true;
+                }
+            });
+
+            video.muted = false;
+
+            video.play()
+                .then(() => {
+                    videoPlaying = true;
+                })
+                .catch(err => {
+                    console.log(err);
                 });
 
-                marker.addEventListener('markerLost', () => {
-                    const video = document.querySelector(
-                        marker.querySelector('a-video').getAttribute('src')
-                    );
-
-                    if (video) {
-                        video.pause();
-                        video.muted = true;
-                    }
-                });
-            }
         });
+
+        marker.addEventListener('markerLost', () => {
+
+            const video = document.querySelector(
+                marker.querySelector('a-video').getAttribute('src')
+            );
+
+            if (!video) return;
+
+            // Chỉ tắt tiếng, KHÔNG reset video
+            video.muted = true;
+
+            videoPlaying = false;
+        });
+
+    }
+});
 
         // 📐 FIT VIDEO
         AFRAME.registerComponent('fit-video', {
