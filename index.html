@@ -1,127 +1,173 @@
+```html
 <!doctype html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>AR Video Audio</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 
-    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+<title>AR Video Player</title>
 
-    <script>
-        let audioUnlocked = false;
+<script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
-        AFRAME.registerComponent('videohandler', {
-            init: function () {
-                const marker = this.el;
-                const video = document.querySelector("#vid");
+<script>
 
-                marker.addEventListener('markerFound', () => {
+let audioUnlocked = false;
 
-                    if (audioUnlocked) {
-                        video.muted = false;
-                    }
+window.addEventListener("load", () => {
 
-                    video.play().catch(err => {
-                        console.log("Play error:", err);
-                    });
-                });
+    const video = document.getElementById("vid");
 
-                marker.addEventListener('markerLost', () => {
-                    video.pause();
-                });
-            }
-        });
+    // Mở khóa âm thanh sau lần chạm đầu tiên
+    document.body.addEventListener("click", async () => {
 
-        window.addEventListener("load", () => {
+        if (audioUnlocked) return;
 
-            const btn = document.getElementById("unlockAudio");
+        try {
 
-            btn.addEventListener("click", () => {
+            video.muted = false;
 
-                const video = document.querySelector("#vid");
+            await video.play();
 
+            video.pause();
+            video.currentTime = 0;
+
+            audioUnlocked = true;
+
+            document.getElementById("overlay").style.display = "none";
+
+            console.log("Audio unlocked");
+
+        } catch(err) {
+            console.log(err);
+        }
+
+    }, { once:true });
+
+});
+
+
+AFRAME.registerComponent("videohandler", {
+
+    init: function () {
+
+        const marker = this.el;
+        const video = document.getElementById("vid");
+
+        marker.addEventListener("markerFound", () => {
+
+            console.log("Marker Found");
+
+            if (audioUnlocked) {
                 video.muted = false;
+            }
 
-                video.play()
-                    .then(() => {
-
-                        audioUnlocked = true;
-
-                        video.pause();
-                        video.currentTime = 0;
-
-                        btn.style.display = "none";
-
-                        console.log("Audio unlocked");
-
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
+            video.play().catch(err => {
+                console.log(err);
             });
 
         });
-    </script>
+
+        marker.addEventListener("markerLost", () => {
+
+            console.log("Marker Lost");
+
+            video.pause();
+
+        });
+
+    }
+
+});
+
+</script>
+
+<style>
+
+html,
+body{
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    width:100%;
+    height:100%;
+}
+
+#overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.8);
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    z-index:9999;
+    font-size:22px;
+    padding:20px;
+    box-sizing:border-box;
+}
+
+</style>
+
 </head>
 
-<body style="margin:0;overflow:hidden;">
+<body>
 
-    <!-- Nút bật âm thanh -->
-    <button
-        id="unlockAudio"
-        style="
-            position:fixed;
-            z-index:9999;
-            top:20px;
-            left:20px;
-            padding:12px 20px;
-            font-size:16px;
-        ">
-        🔊 Bật âm thanh
-    </button>
+<div id="overlay">
+    Chạm màn hình 1 lần để bật âm thanh AR
+</div>
 
-    <a-scene
-        embedded
-        vr-mode-ui="enabled:false"
-        loading-screen="enabled:false"
-        arjs="sourceType:webcam; debugUIEnabled:false;"
+<a-scene
+    embedded
+    vr-mode-ui="enabled:false"
+    loading-screen="enabled:false"
+    renderer="antialias:true; logarithmicDepthBuffer:true;"
+    arjs="sourceType:webcam; facingMode:environment; debugUIEnabled:false;"
+>
+
+    <a-assets>
+
+        <video
+            id="vid"
+            src="assets/asset.mp4"
+            preload="auto"
+            loop
+            playsinline
+            webkit-playsinline
+            crossorigin="anonymous">
+        </video>
+
+    </a-assets>
+
+    <a-marker
+        type="pattern"
+        url="assets/marker.patt"
+        videohandler
+        smooth="true"
+        smoothCount="20"
+        smoothTolerance="0.01"
+        smoothThreshold="5"
+        emitevents="true"
     >
 
-        <a-assets>
-            <video
-                id="vid"
-                src="assets/asset7.mp4"
-                preload="auto"
-                loop
-                muted
-                playsinline
-                webkit-playsinline
-                crossorigin="anonymous">
-            </video>
-        </a-assets>
+        <a-video
+            src="#vid"
+            width="2"
+            height="1.125"
+            rotation="-90 0 0"
+            position="0 0.1 0">
+        </a-video>
 
-        <a-marker
-            type="pattern"
-            url="assets/marker7.patt"
-            videohandler
-            smooth="true"
-            smoothCount="10"
-            smoothTolerance="0.01"
-            smoothThreshold="5">
+    </a-marker>
 
-            <a-video
-                src="#vid"
-                position="0 0.1 0"
-                rotation="-90 0 0"
-                width="2"
-                height="1.125">
-            </a-video>
+    <a-entity camera></a-entity>
 
-        </a-marker>
-
-        <a-entity camera></a-entity>
-
-    </a-scene>
+</a-scene>
 
 </body>
 </html>
+```
