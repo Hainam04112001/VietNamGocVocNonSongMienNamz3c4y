@@ -6,22 +6,42 @@
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
         <script>
-            AFRAME.registerComponent('videohandler', {
-                init: function () {
-                    var marker = this.el;
-                    this.vid = document.querySelector("#vid");
+        AFRAME.registerComponent('videohandler', {
+            init: function () {
+                const marker = this.el;
 
-                    marker.addEventListener('markerFound', function () {
-                        this.toggle = true;
-                        this.vid.play();
-                    }.bind(this));
+                marker.addEventListener('markerFound', () => {
 
-                    marker.addEventListener('markerLost', function () {
-                        this.toggle = false;
-                        this.vid.pause();
-                    }.bind(this));
-                },
-            });
+                    // ❌ TẮT TẤT CẢ VIDEO
+                    document.querySelectorAll("video").forEach(v => {
+                        v.pause();
+                        v.currentTime = 0;
+                        v.muted = true;
+                    });
+
+                    // ✅ CHỈ BẬT VIDEO ĐANG QUÉT
+                    const video = document.querySelector(
+                        marker.querySelector('a-video').getAttribute('src')
+                    );
+
+                    if (video) {
+                        video.muted = false;
+                        video.play().catch(() => {});
+                    }
+                });
+
+                marker.addEventListener('markerLost', () => {
+                    const video = document.querySelector(
+                        marker.querySelector('a-video').getAttribute('src')
+                    );
+
+                    if (video) {
+                        video.pause();
+                        video.muted = true;
+                    }
+                });
+            }
+        });
         </script>
     </head>
 
