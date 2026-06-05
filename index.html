@@ -15,55 +15,42 @@
 
     <script>
         // 🎬 VIDEO HANDLER (FIX ÂM THANH)
-AFRAME.registerComponent('videohandler', {
-    init: function () {
+        AFRAME.registerComponent('videohandler', {
+            init: function () {
+                const marker = this.el;
 
-        const marker = this.el;
-        let lostTimer = null;
+                marker.addEventListener('markerFound', () => {
 
-marker.addEventListener('markerFound', () => {
+                    // ❌ TẮT TẤT CẢ VIDEO
+                    document.querySelectorAll("video").forEach(v => {
+                        v.pause();
+                        v.currentTime = 0;
+                        v.muted = true;
+                    });
 
-    clearTimeout(lostTimer);
+                    // ✅ CHỈ BẬT VIDEO ĐANG QUÉT
+                    const video = document.querySelector(
+                        marker.querySelector('a-video').getAttribute('src')
+                    );
 
-    const video = document.querySelector(
-        marker.querySelector('a-video').getAttribute('src')
-    );
+                    if (video) {
+                        video.muted = false;
+                        video.play().catch(() => {});
+                    }
+                });
 
-    if (!video) return;
+                marker.addEventListener('markerLost', () => {
+                    const video = document.querySelector(
+                        marker.querySelector('a-video').getAttribute('src')
+                    );
 
-    document.querySelectorAll('video').forEach(v => {
-        if (v !== video) {
-            v.pause();
-            v.currentTime = 0;
-        }
-    });
-
-    video.currentTime = 0;
-    video.play().catch(() => {});
-});
-
-            // Nếu video chưa phát thì mới play
-            if (video.paused) {
-                video.currentTime = 0;
-                video.muted = true;
-                video.play().catch(() => {});
+                    if (video) {
+                        video.pause();
+                        video.muted = true;
+                    }
+                });
             }
         });
-
-        marker.addEventListener('markerLost', () => {
-
-    const video = document.querySelector(
-        marker.querySelector('a-video').getAttribute('src')
-    );
-
-    if (!video) return;
-
-    video.pause();
-    video.currentTime = 0;
-
-});
-    }
-});
 
         // 📐 FIT VIDEO
         AFRAME.registerComponent('fit-video', {
@@ -109,7 +96,11 @@ marker.addEventListener('markerFound', () => {
         });
 
         // 🔊 CLICK 1 LẦN ĐỂ MỞ AUDIO (mobile)
-
+        document.addEventListener('click', function () {
+            document.querySelectorAll("video").forEach(v => {
+                v.play().catch(() => {});
+            });
+        });
     </script>
 </head>
 
@@ -125,14 +116,14 @@ marker.addEventListener('markerFound', () => {
 
     <!-- 🎬 VIDEO -->
     <a-assets>
-        <video id="vid1" src="assets/asset.mp4" preload="metadata"  loop muted playsinline></video>
-        <video id="vid2" src="assets/sach1.mp4" preload="metadata"  loop muted playsinline></video>
-        <video id="vid3" src="assets/sach2.mp4" preload="metadata" loop muted playsinline></video>
-        <video id="vid4" src="assets/sach3.mp4" preload="metadata" loop muted playsinline></video>
-        <video id="vid5" src="assets/sach4.mp4" preload="metadata"  loop muted playsinline></video>
-        <video id="vid6" src="assets/sach5.mp4" preload="metadata"  loop muted playsinline></video>
-        <video id="vid7" src="assets/xuan.mp4" preload="metadata"  loop muted playsinline></video>
-        <video id="vid8" src="assets/asset7.mp4" preload="metadata"  loop muted playsinline></video>
+        <video id="vid1" src="assets/asset.mp4" preload="auto" autoplay loop muted playsinline></video>
+        <video id="vid2" src="assets/sach1.mp4" preload="auto" autoplay loop muted playsinline></video>
+        <video id="vid3" src="assets/sach2.mp4" preload="auto" autoplay loop muted playsinline></video>
+        <video id="vid4" src="assets/sach3.mp4" preload="auto" autoplay loop muted playsinline></video>
+        <video id="vid5" src="assets/sach4.mp4" preload="auto" autoplay loop muted playsinline></video>
+        <video id="vid6" src="assets/sach5.mp4" preload="auto" autoplay loop muted playsinline></video>
+        <video id="vid7" src="assets/xuan.mp4" preload="auto" autoplay loop muted playsinline></video>
+        <video id="vid8" src="assets/asset7.mp4" preload="auto" autoplay loop muted playsinline></video>
     </a-assets>
 
     <!-- 📕 SÁCH CHÍNH -->
