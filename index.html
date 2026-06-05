@@ -1,173 +1,79 @@
-```html
 <!doctype html>
 <html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <head>
+        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+        <script>
+            AFRAME.registerComponent('videohandler', {
+                init: function () {
+                    var marker = this.el;
+                    this.vid = document.querySelector("#vid");
 
-<title>AR Video Player</title>
+                    marker.addEventListener('markerFound', function () {
+                        this.toggle = true;
+                        this.vid.play();
+                    }.bind(this));
 
-<script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-
-<script>
-
-let audioUnlocked = false;
-
-window.addEventListener("load", () => {
-
-    const video = document.getElementById("vid");
-
-    // Mở khóa âm thanh sau lần chạm đầu tiên
-    document.body.addEventListener("click", async () => {
-
-        if (audioUnlocked) return;
-
-        try {
-
-            video.muted = false;
-
-            await video.play();
-
-            video.pause();
-            video.currentTime = 0;
-
-            audioUnlocked = true;
-
-            document.getElementById("overlay").style.display = "none";
-
-            console.log("Audio unlocked");
-
-        } catch(err) {
-            console.log(err);
-        }
-
-    }, { once:true });
-
-});
-
-
-AFRAME.registerComponent("videohandler", {
-
-    init: function () {
-
-        const marker = this.el;
-        const video = document.getElementById("vid");
-
-        marker.addEventListener("markerFound", () => {
-
-            console.log("Marker Found");
-
-            if (audioUnlocked) {
-                video.muted = false;
-            }
-
-            video.play().catch(err => {
-                console.log(err);
+                    marker.addEventListener('markerLost', function () {
+                        this.toggle = false;
+                        this.vid.pause();
+                    }.bind(this));
+                },
             });
+        </script>
+    </head>
 
-        });
+    <body style="margin: 0; overflow: hidden;">
+        <a-scene
+            vr-mode-ui="enabled: false"
+            loading-screen="enabled: false;"
+            arjs='sourceType: webcam; debugUIEnabled: false;'
+            id="scene"
+            embedded
+            gesture-detector
+        >
+            <a-assets>
+                <video
+                    id="vid"
+                    src="assets/asset7.mp4"
+                    preload="auto"
+                    response-type="arraybuffer"
+                    loop
+                    crossorigin
+                    webkit-playsinline
+                    autoplay
+                 
+                    playsinline
+                ></video>
+            </a-assets>
 
-        marker.addEventListener("markerLost", () => {
+            <a-marker
+                type="pattern"
+                preset="custom"
+                url="assets/marker7.patt"
+                videohandler
+                smooth="true"
+                smoothCount="10"
+                smoothTolerance="0.01"
+                smoothThreshold="5"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+                id="markerA"
+            >
+                <a-video
+                    src="#vid"
+                    scale="1 1 1"
+                    position="0 0.1 0"
+                    rotation="-90 0 0"
+                    class="clickable"
+                    gesture-handler
+                ></a-video>
+            </a-marker>
 
-            console.log("Marker Lost");
-
-            video.pause();
-
-        });
-
-    }
-
-});
-
-</script>
-
-<style>
-
-html,
-body{
-    margin:0;
-    padding:0;
-    overflow:hidden;
-    width:100%;
-    height:100%;
-}
-
-#overlay{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,.8);
-    color:#fff;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    z-index:9999;
-    font-size:22px;
-    padding:20px;
-    box-sizing:border-box;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div id="overlay">
-    Chạm màn hình 1 lần để bật âm thanh AR
-</div>
-
-<a-scene
-    embedded
-    vr-mode-ui="enabled:false"
-    loading-screen="enabled:false"
-    renderer="antialias:true; logarithmicDepthBuffer:true;"
-    arjs="sourceType:webcam; facingMode:environment; debugUIEnabled:false;"
->
-
-    <a-assets>
-
-        <video
-            id="vid"
-            src="assets/asset.mp4"
-            preload="auto"
-            loop
-            playsinline
-            webkit-playsinline
-            crossorigin="anonymous">
-        </video>
-
-    </a-assets>
-
-    <a-marker
-        type="pattern"
-        url="assets/marker.patt"
-        videohandler
-        smooth="true"
-        smoothCount="20"
-        smoothTolerance="0.01"
-        smoothThreshold="5"
-        emitevents="true"
-    >
-
-        <a-video
-            src="#vid"
-            width="2"
-            height="1.125"
-            rotation="-90 0 0"
-            position="0 0.1 0">
-        </a-video>
-
-    </a-marker>
-
-    <a-entity camera></a-entity>
-
-</a-scene>
-
-</body>
+            <a-entity camera></a-entity>
+        </a-scene>
+    </body>
 </html>
-```
