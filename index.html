@@ -21,12 +21,7 @@
 
                 marker.addEventListener('markerFound', () => {
 
-                    // ❌ TẮT TẤT CẢ VIDEO
-                    document.querySelectorAll("video").forEach(v => {
-                        v.pause();
-                        v.currentTime = 0;
-                        v.muted = true;
-                    });
+
 
                     // ✅ CHỈ BẬT VIDEO ĐANG QUÉT
                     const video = document.querySelector(
